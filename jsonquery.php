@@ -19,7 +19,7 @@ include 'linkedlist.php';
 // The query methods can be subsequently used to select objects/arrays, key, values from the json list.
 // JsonQuery class can handle mixed json structures of different formats at once.
 // Querying can be quite fast and efficient although time to seek items can increase for high number of nodes. The class can easily
-// manage hundred of thousands json structures at once.
+// manage hundreds and thousands json structures at once.
 // 
 // For generating a json tree with the depth key and values : Class JsonQuery method JsonTree()
 //
