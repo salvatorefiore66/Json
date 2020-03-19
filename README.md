@@ -98,9 +98,9 @@ json string to the constructor. Follow various methods examples.
        $jq = new JsonQuery($jstr); 
 
 
-       // Display the first 25 tree nodes for current json 
+       // Display the first 50 tree nodes for current json 
        // starting fron first node
-       echo $jq->JsonTree();
+       echo $jq->JsonTree(50);
 
 
        // Getting the number of nodes allocated by the json list
