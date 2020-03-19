@@ -124,8 +124,6 @@ json string to the constructor. Follow various methods examples.
        echo "key searched > description < with depth 2  - found : " . sizeof($arrayres) .  "<br><br>";
 
        // Seeking an arrangement of json array/object with key.
-       // Avoiding headers or unwanted objects set at the beginning
-       // of json.
        $arrayres = $jq->JSeekKeyArr("websites");
        echo "object/array with key searched > websites <   - found : " . sizeof($arrayres) .  "<br><br>";
 
