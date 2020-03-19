@@ -2,7 +2,9 @@
 include 'linkedlist.php';
 
 // -----------------------------------------------------Class JsonQuery------------------------------------------------------------
+// Salvatore G. Fiore copyright 2020 www.salvatorefiore.com
 // The main purpose: to be used for querying json.
+//
 // Very easy and straigthforward to use and extend.
 // The constructor takes a json string as argument and will allocate a dynamic linked
 // list containing the json structure.
