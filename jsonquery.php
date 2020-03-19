@@ -8,18 +8,19 @@ include 'linkedlist.php';
 // list containing the json structure.
 // Once allocated by the constructor, the linked list will contain nodes with the analysed json objects arrays and values as 
 // a numerical representation of the json tree.
-// A json tree may have a main object or array with depth 0 from which a nested structure can originate. Each json object or array 
-// subsequently increments the depth with nesting whilst elements are 1 level deeper than the array/object declaration.
-// The list once populated with the analysed json, will eventually contain nodes with depth key and the actual values of the json
-// as:
+// A json tree may have a main object or array with depth 0 from which a nested structure can originate.  
+// Each json object or array subsequently increments the depth with nesting whilst elements are 1 level 
+// deeper than the array/object declaration. The list once populated with the analysed json, will eventually 
+// contain nodes with depth key and the actual values of the json as:
 //
 // { "depth":"nnn","key":"key","value":"fieldvalue","length":"num.items","next":"yes/no" }
 //
-// It is thus possible to seek and access json values specifying depth and key of the object/array or key from which originate. 
+// It is thus possible to seek and access json values specifying depth and key of the object/array or key
+// from which originate. 
 // The query methods can be subsequently used to select objects/arrays, key, values from the json list.
 // JsonQuery class can handle mixed json structures of different formats at once.
-// Querying can be quite fast and efficient although time to seek items can increase for high number of nodes. The class can easily
-// manage hundreds and thousands json structures at once.
+// Querying can be quite fast and efficient although time to seek items can increase for high number of nodes. 
+// The class can easily manage hundreds and thousands json structures at once.
 // 
 // For generating a json tree with the depth key and values : Class JsonQuery method JsonTree()
 //
