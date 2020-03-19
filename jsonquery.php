@@ -99,6 +99,54 @@ class JsonQuery
         return true;
     }
   
+      
+    // Seeking an arrangement of json array/object/key with key and depth.
+    // Select only keys from object as indicated in  $keyselect
+    // $startAtNode takes the actual node number from where to start
+    // the search.
+    // Returns an array with keys found and their values.
+    public function JSeek($keyselect,$key,$sdepth,$startAtNode=1) 
+    { 
+        $arrNode = array();
+        
+        // Iteratively seeking array nodes with key
+        $this->jqueryList->iteratorList(function($node) use ($key,$sdepth,$keyselect,&$arrNode)
+            {
+                $jsonstr = json_decode($node->listvalue);
+                $keydepth = $jsonstr->depth;
+                
+                // Array/object with sought key
+                if((string) $jsonstr->key == (string) $key && (int) $jsonstr->depth == (int) $sdepth)
+                {
+                    $arrNode[] = $jsonstr;
+                    
+                    if((string) $jsonstr->value == "Array")
+                    {
+                        // Iteratively saving array nodes with key
+                        $this->jqueryList->iteratorListAtNode(function($node) use ($key,$keydepth,$keyselect,&$arrNode)
+                            {
+                                $jsonstr = json_decode($node->listvalue);
+                            
+                                if((int) $jsonstr->depth > (int) $keydepth)
+                                { 
+                                    if(in_array($jsonstr->key,$keyselect))
+                                        $arrNode[] = $jsonstr;
+                                    return true;
+                                }
+                                else
+                                    return false;
+                             
+                            },$node->nextNode); 
+                    }
+                }
+                return true;
+                
+            },$startAtNode);
+            
+        return $arrNode;
+    }
+    
+
     
     // Seeking nodes in json with unique keys.
     // $startAtNode takes the number of node from where to start
