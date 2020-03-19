@@ -13,7 +13,7 @@ include 'linkedlist.php';
 // deeper than the array/object declaration. The list once populated with the analysed json, will eventually 
 // contain nodes with depth key and the actual values of the json as:
 //
-// { "depth":"nnn","key":"key","value":"fieldvalue","length":"num.items","next":"yes/no" }
+// { "depth":"nnn","key":"key","value":"fieldvalue","length":"numitems","next":"yes/no" }
 //
 // It is thus possible to seek and access json values specifying depth and key of the object/array or key
 // from which originate. 
