@@ -101,7 +101,7 @@ class JsonQuery
   
       
     // Seeking an arrangement of json array/object/key with key and depth.
-    // Select only keys from object as indicated in  $keyselect
+    // Selects only keys from object as indicated in  $keyselect
     // $startAtNode takes the actual node number from where to start
     // the search.
     // Returns an array with keys found and their values.
