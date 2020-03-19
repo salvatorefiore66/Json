@@ -135,3 +135,22 @@ json string to the constructor. Follow various methods examples.
        echo "object/array with key searched > online_media <  with depth 2  - found : " . sizeof($arrayres) .  "<br><br>";
 
 
+       // Selecting only given keys - $keystoselect - from an arrangement 
+       // of json array/object - $objectkey
+       // The object/array is with key and of a certain depth.
+       // Avoiding headers or unwanted objects set at the beginning
+       // of json is set to 1.
+       
+       $objectkey = "online_media";
+
+       $keystoselect = array("description","link");
+
+       $arrayres = $jq->JSeek($keystoselect,$objectkey,2,1);
+
+       echo "object/array with key searched > online_media <  with depth 2  - found : " . sizeof($arrayres) .  "<br><br>";
+
+       foreach($arrayres as  $arrayre)
+            echo "$arrayre->key  -- $arrayre->value   <br><br>";
+
+
+
