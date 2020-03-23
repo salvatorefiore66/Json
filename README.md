@@ -135,22 +135,50 @@ json string to the constructor. Follow various methods examples.
        echo "object/array with key searched > online_media <  with depth 2  - found : " . sizeof($arrayres) .  "<br><br>";
 
 
+
+       // callback function for checking the key reported in $keystoselect
+       $func1 = function($jnode)
+       {    
+           echo "checking with func1 <br>";
+           return true;
+
+       };
+    
+    
+    
+       // callback function for checking the key reported in $keystoselect
+       $func2 = function($jnode)
+       {    
+    
+           echo "checking with func2 <br>";
+           return true;
+   
+       };
+
+       
+
        // Selecting only given keys - $keystoselect - from an arrangement 
        // of json array/object - $objectkey
        // The object/array is with key and of a certain depth.
+       // A callback will be invoked for each key in
+       // $keyselect. The callback will save the key when returning true, nothing otherwise.
+       // The callback will receive by argument current json node.
+       // Callback function can be set to null to avoid the call.
        // Avoiding headers or unwanted objects set at the beginning
-       // of json is set to 1.
-       
+       // of json
+
+
        $objectkey = "online_media";
 
-       $keystoselect = array("description","link");
+       $keystoselect = array("description" => $func1,"link"  => $func2);
 
        $arrayres = $jq->JSeek($keystoselect,$objectkey,2,1);
 
        echo "object/array with key searched > online_media <  with depth 2  - found : " . sizeof($arrayres) .  "<br><br>";
 
        foreach($arrayres as  $arrayre)
-            echo "$arrayre->key  -- $arrayre->value   <br><br>";
+             echo "$arrayre->key  -- $arrayre->value   <br><br>";
+       
 
 
 
