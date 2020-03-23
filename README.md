@@ -165,7 +165,7 @@ json string to the constructor. Follow various methods examples.
        // The callback will receive by argument current json node.
        // Callback function can be set to null to avoid the call.
        // Avoiding headers or unwanted objects set at the beginning
-       // of json
+       // of json set at 1 node.
 
 
        $objectkey = "online_media";
