@@ -31,7 +31,7 @@ include 'linkedlist.php';
 class JsonQuery
 {
 
-    protected $json;                               // current analised json
+    protected $json;                               // current analised json string
     protected $jsonNumNodes;                       // number of nodes composing the json linked list
     protected $jqueryList;                         // linked list containing analysed json string
  
