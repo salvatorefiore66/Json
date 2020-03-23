@@ -32,8 +32,8 @@ class JsonQuery
 {
 
     protected $json;                               // current analised json
-    protected $jsonNumNodes;                       // number of nodes composing the json string
-    protected $jqueryList;                         // list containing analysed json string
+    protected $jsonNumNodes;                       // number of nodes composing the json linked list
+    protected $jqueryList;                         // linked list containing analysed json string
  
 
 
