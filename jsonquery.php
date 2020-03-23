@@ -198,17 +198,14 @@ class JsonQuery
         // Seeking nodes with key
         $this->jqueryList->iteratorList(function($node) use ($key,&$arrNode)
             {
-                if($node !== null)
-                {
+
                     $jsonstr = json_decode($node->listvalue);
                     
                     if((string) $jsonstr->key == (string) $key)
                         $arrNode[] = $jsonstr;
             
                     return true;
-                }
-                else
-                    return false;
+   
                     
             },$startAtNode);
 
@@ -228,17 +225,14 @@ class JsonQuery
         // Seeking nodes with depth and key
         $this->jqueryList->iteratorList(function($node) use ($depth,$key,&$arrNode)
             {
-                if($node !== null)
-                {
+            
                     $jsonstr = json_decode($node->listvalue);
                 
                     if((int) $jsonstr->depth == (int) $depth && (string) $jsonstr->key == (string) $key)
                         $arrNode[] = $jsonstr;
             
                     return true;
-                }
-                else
-                    return false;
+         
                     
             },$startAtNode);
 
