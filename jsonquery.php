@@ -94,7 +94,7 @@ class JsonQuery
         
         // Unsetting the recursive iterator
         unset($iterator);
-        
+       
         // Setting number of nodes for current json string
         $this->jsonNumNodes = $this->jqueryList->getTotListNode();
      
@@ -102,17 +102,25 @@ class JsonQuery
     }
   
       
-    // Seeking an arrangement of json array/object/key with key and depth.
-    // Selects only keys from object as indicated in  $keyselect
+    // Seeking an arrangement of json array/object or a field with key and depth.
+    // Select keys from array/object as indicated in $keyselect by the
+    // return of a callback function. A callback will be invoked for each key in
+    // $keyselect. The callback will save the key when returning true, nothing otherwise.
+    // The callback will receive by argument current json arrangements nodes.
+    //  
+    // Callback function can be set to null to avoid the call.
     // $startAtNode takes the actual node number from where to start
     // the search.
     // Returns an array with keys found and their values.
+
+    
     public function JSeek($keyselect,$key,$sdepth,$startAtNode=1) 
     { 
-        $arrNode = array();
+        
+        $arr = array();
         
         // Iteratively seeking array nodes with key
-        $this->jqueryList->iteratorList(function($node) use ($key,$sdepth,$keyselect,&$arrNode)
+        $this->jqueryList->iteratorList(function($node) use ($key,$sdepth,$keyselect,&$arr)
             {
                 $jsonstr = json_decode($node->listvalue);
                 $keydepth = $jsonstr->depth;
@@ -120,19 +128,23 @@ class JsonQuery
                 // Array/object with sought key
                 if((string) $jsonstr->key == (string) $key && (int) $jsonstr->depth == (int) $sdepth)
                 {
-                    $arrNode[] = $jsonstr;
+                    $arr[] = $jsonstr;
                     
-                    if((string) $jsonstr->value == "Array")
+                    if((string) $jsonstr->value === "Array")
                     {
+                        // reset array pointer
+                        prev($arr);
+                        
                         // Iteratively saving array nodes with key
-                        $this->jqueryList->iteratorListAtNode(function($node) use ($key,$keydepth,$keyselect,&$arrNode)
+                        $this->jqueryList->iteratorListAtNode(function($node) use ($key,$keydepth,$keyselect,&$arr)
                             {
                                 $jsonstr = json_decode($node->listvalue);
                             
                                 if((int) $jsonstr->depth > (int) $keydepth)
                                 { 
-                                    if(in_array($jsonstr->key,$keyselect))
-                                        $arrNode[] = $jsonstr;
+                                    
+                                    $arr[] = $jsonstr;
+                                
                                     return true;
                                 }
                                 else
@@ -144,11 +156,36 @@ class JsonQuery
                 return true;
                 
             },$startAtNode);
-            
+        
+        $arrNode = array();
+        
+        foreach($arr as $arrnode)
+        {
+            foreach($keyselect as $keysel => $func)
+            {
+                if($arrnode->key === $keysel)
+                {
+                    // callback function
+                    if($func !== null) 
+                    {
+                        if(call_user_func($func,$arr) !== false)
+                            $arrNode[] = $arrnode;
+                    }
+                    else 
+                        $arrNode[] = $arrnode;
+                }
+       	                
+            }
+                                
+        }
+        
+        
         return $arrNode;
+        
+        
     }
     
-
+   
     
     // Seeking nodes in json with unique keys.
     // $startAtNode takes the number of node from where to start
