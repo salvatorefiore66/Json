@@ -1,12 +1,13 @@
 <?php
 
-// -------------------------------Class LinkedList------------------------------------
+// -------------------------------Class  LinkedList------------------------------------
 // Salvatore G. Fiore copyright 2020 www.salvatorefiore.com
 // The main purpose: to be used for allocating dynamically a linked list with (x)nodes.
 //
 // head----->node----->node----->node----->node----->node----->null
+// head<-----node<-----node<-----node<-----node<-----node<-----null
 //
-// The node is interlinked in a sequential way to other nodes. 
+// The node is interlinked in a sequential way to other nodes (next and previous)
 // Each node is self contained and the list is able to manage 
 // a value (generic type) for each node;
 //
@@ -36,7 +37,7 @@ class LinkedList
        // Constructor with two arguments.
        // Callback user functions invoked before each node insertion and soon after.
        
-       public function __construct($before,$after) 
+       public function __construct($before=null,$after=null) 
        {
             $this->head = null;
             $this->lastNode = null;
@@ -57,8 +58,10 @@ class LinkedList
                     return false;
        	    }
           
+            
             $node = new ListNode($item);
             $node->nextNode = null;
+            $node->prevNode = $this->lastNode;
             
             if($this->head !== null)
                $this->lastNode->nextNode = $node; 
@@ -78,8 +81,7 @@ class LinkedList
         
         
         
-        // Inserting a new node at a given position. Returns the node number
-        // inserted.
+        // Inserting a new node at a given position. Returns the inserted node.
         public function insertNodeAt($n,$item) 
         {
           
@@ -99,27 +101,29 @@ class LinkedList
        	        
        	    if($n === 1)
        	    {
-       	        $prevNode = $node;
+       	        $prevNode = null;
        	        $this->head = $node;
-       	            
        	    }
        	    else
        	    {
        	        $prevNode = $this->getNode($n - 1);
        	        $prevNode->nextNode = $node;
+       	    
        	    }
        	        
+       	    // update pointers to previous and next nodes
        	    $node->nextNode = $currnode;
+       	    $node->prevNode = $prevNode;
+       	    $currnode->prevNode = $node;
        	    
-
- 
+       	    
             if($this->callafternode !== null)
        	    {
                 call_user_func($this->callafternode,$node);
        	    }
         
             $this->renumList();
-            return  $n;
+            return  $node;
         }
         
        
@@ -137,11 +141,29 @@ class LinkedList
   
   
   
+  
+  
+  
+        // Allocating n nodes in one go. Position of insertion and values
+        // to be inserted are passed respectively in the array $n and $value
+        public function allocateNodeAt($values)
+        {
+            foreach($values as $key => $value)
+                // insert nodes containing values
+                $this->insertNodeAt($key,$value);
+        }
+  
+  
+  
+  
+  
+  
         // Iterator traversing the list. Callback user function is called at each
         // iteration receiving the current node passed as argument. 
-        // Iteration may be offset starting at $startAtNode.
+        // Iteration may be offset starting at $startAtNode
+        // For reverse order iterations $mode should be set to "-"
         // The iteration can end prematurely if the callable user function returns false;
-        public function iteratorList($callback,$startAtNode=1) 
+        public function iteratorList($callback,$startAtNode=1,$mode="") 
         {         
         
             $currentNode = $this->getNode($startAtNode);
@@ -150,24 +172,31 @@ class LinkedList
             {
                 if(call_user_func($callback,$currentNode) === false)
                     return false;
-       	    
-                $currentNode = $currentNode->nextNode; 
+                if($mode !== "-")
+                    $currentNode = $currentNode->nextNode; 
+                else
+                    $currentNode = $currentNode->prevNode; 
                 
             }
             return true;
         }
   
   
-        
+  
+    
         // Iterator traversing the list. Callback user function is called at each
         // iteration receiving the current node passed as argument. 
         // Iteration may be offset starting at $Node.
         // The iteration can end prematurely if the callable user function returns false;
-        public function iteratorListAtNode($callback,$Node=null) 
+        // The method cam receive the node number or the actual node from where to
+        // start the iteration.
+        public function iteratorListAtNode($callback,$Node=null,$mode="") 
         {         
         
             if($Node === null)
                 $currentNode = $this->head;
+            else if(is_numeric($Node))
+                $currentNode = $this->getNode($Node);
             else
                $currentNode = $Node;
         
@@ -176,7 +205,10 @@ class LinkedList
                 if(call_user_func($callback,$currentNode) === false)
                     return false;
        	    
-                $currentNode = $currentNode->nextNode; 
+                if($mode !== "-")
+                    $currentNode = $currentNode->nextNode; 
+                else
+                    $currentNode = $currentNode->prevNode; 
                 
             }
             return true;
@@ -191,7 +223,7 @@ class LinkedList
         // a reference to it.
         // Iteration may be offset starting at $Node.
         // The iteration can end prematurely if the callable user function returns false;
-        public function iteratorNode($callback,$Node=null) 
+        public function iteratorNode($callback,$Node=null,$mode="") 
         {         
         
             if($Node === null)
@@ -205,7 +237,10 @@ class LinkedList
                 if($callback($currentNode) === false)
                     return false;
        	    
-                $currentNode = $currentNode->nextNode; 
+                if($mode !== "-")
+                    $currentNode = $currentNode->nextNode; 
+                else
+                    $currentNode = $currentNode->prevNode; 
                 
             }
             return true;
@@ -229,6 +264,9 @@ class LinkedList
             else
                    return 0;
         }
+    
+    
+    
     
     
         // Seeking the first node value passed as argument
@@ -271,7 +309,7 @@ class LinkedList
             while($currentNode !== null)
             {
                // replace this line with your display class method
-               echo $currentNode->listvalue . " -" . $currentNode->nodeNum . "-  ";
+               echo $currentNode->listvalue . " -" . $currentNode->nodeNum . "-  " . " < " .$currentNode->prevNode->nodeNum . " > ";
                                                         
                $currentNode = $currentNode->nextNode;
             
@@ -296,6 +334,8 @@ class LinkedList
         }
         
         
+        
+        
      
         // Renumbering the whole list >= 1 <= n
         public function renumList() 
@@ -315,39 +355,49 @@ class LinkedList
             $this->totNode = $numb;
         }
      
-     
-     
-     
-        // Delete a node from the list. Node number is passed as argument.
+    
+    
+    
+    
+    
+         // Delete a node from the list. Node number is passed as argument.
         // Returns the total nodes in the list
         public function deleteNode($n) 
         {  
-            $node = $this->getNode($n);
+        
+            $currentNode = $this->head;
             
+            while($currentNode !== null && $currentNode->nodeNum < $n)
+                $currentNode = $currentNode->nextNode;
+                
             if($n === 1)
             {
-                $this->head = $this->getNode($n+1);
+                $this->head = $this->head->nextNode;
+                $this->head->prevNode = null;
             }
             elseif($n === $this->totNode)
             { 
-                $this->lastNode = $this->getNode($n-1);
+                $this->lastNode = $this->lastNode->prevNode;
                 $this->lastNode->nextNode = null;
             }
             else
             {   
-                $nodeb = $this->getNode($n-1);
-                $nodeb->nextNode = $this->getNode($n+1);
+              $currentNode->prevNode->nextNode = $currentNode->nextNode;
+              $currentNode->nextNode->prevNode = $currentNode->prevNode;
             }
     
-            unset($node);
             
-            $this->lastnode = $this->getNode($this->totNode);
+            unset($currentNode);
+
+        
             $this->totNode = $this->totNode-1;
             $this->renumList();
             return $this->totNode;
         }
  
- 
+    
+
+
     
         // Cutting the list at node n
         public function cutList($n) 
@@ -382,7 +432,7 @@ class LinkedList
      
         
     
-        // Descendending order list sorting with bubble sort
+        // Descending order list sorting with bubble sort
         // It's a bit slow for high number of nodes > 80000
         public function ListSortDesc() 
         {
@@ -415,7 +465,7 @@ class LinkedList
         
     
     
-        // Ascendending order list sorting with bubble sort
+        // Ascending order list sorting with bubble sort
         // It's a bit slow for high number of nodes > 80000
         public function ListSortAsc() 
         {
@@ -454,13 +504,13 @@ class LinkedList
             $this->lastNode->nextNode = $this->head; 
         }
         
+      
         
         
         // Returning the value of a node 
         // the node number is passed by parameter
         public function getValue($itemnumb)
         {
-                 
             $currentnode = $this->head;
              
             for($x=0; $x < $itemnumb && $currentnode !== null;  $x++)
@@ -469,23 +519,28 @@ class LinkedList
                 $currentnode = $currentnode->nextNode;
             }  
          
-            return $node->listvalue;     
-            
+            return $node->listvalue;
         }
          
-         
+    
+    
+     
         // Returning a node with the node number
         // passed by parameter
+        // Return null if the node does not exists
         public function getNode($itemnumb)
         {
+            $node = null;
             $currentnode = $this->head;
-             
-            for($x=0; $x < $itemnumb && $currentnode !== null;  $x++)
+            
+            if($itemnumb <= $this->totNode)
             {
-                $node = $currentnode;
-                $currentnode = $currentnode->nextNode;
-            }  
-         
+                for($x=0; $x < $itemnumb && $currentnode !== null;  $x++)
+                {
+                    $node = $currentnode;
+                    $currentnode = $currentnode->nextNode;
+                }
+            }
             return $node;     
          
         }
@@ -493,23 +548,52 @@ class LinkedList
         
         
         // Returning a node offset from $Node
-        public function getNodeOffset($offset,$Node)
+        // The function can also receive the node number in $Node.
+        // Returns the offset node. If the mode is "-" the offset is calculated
+        // on the left of the $Node
+        public function getNodeOffset($offset,$Node,$mode=null)
         {
+            if(is_numeric($Node))
+                $Node = $this->getNode($Node);
+      
             $node = null;
             $currentnode = $Node; 
             
             for($x=0; $x < $offset+1 && $currentnode !== null;  $x++)
             {
+            
                 $node = $currentnode;
-                $currentnode = $currentnode->nextNode;
+                
+                if($mode !== "-")
+                    $currentnode = $currentnode->nextNode; 
+                else
+                    $currentnode = $currentnode->prevNode; 
+               
             }  
-         
             return $node;     
-         
         }
         
+     
         
-        
+         // Renumbering and linking backwards the whole list >= 1 <= n
+        public function linkBackList() 
+        {
+           
+            $numb = 0;
+            $prevnode = null;
+            $currentNode = $this->head;
+            
+            while($currentNode !== null)
+            {
+                $currentNode->prevNode = $prevnode;
+                $currentNode->nodeNum = ++$numb;
+                $prevnode = $currentNode; 
+                $currentNode = $currentNode->nextNode;
+    
+            }
+            $this->totNode = $numb;
+        }
+     
         
         
         // Returning first node
@@ -545,16 +629,16 @@ class LinkedList
 
 
 // Class node contains a value an index, a pointer 
-// to next node. 
+// to next node a pointer to previous node
 class ListNode
 {
     public $listvalue;                   // the node item value
     public $nodeNum;                     // the node sequential index in the list
-    public $nextNode;                    // pointer to next node in the list
+    public $nextNode;                    // pointer to next node in the list / last node pointing to null
+    public $prevNode;                    // pointer to previous node in the list / first node pointing to null
 
     public function __construct($listitem) 
     {
-        
         $this->listvalue = $listitem;
         $this->nextNode = null;
     }
@@ -563,6 +647,3 @@ class ListNode
 
 
 ?>
-
-
-
